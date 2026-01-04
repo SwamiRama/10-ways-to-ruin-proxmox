@@ -1,0 +1,34 @@
+name: Build and Release Book
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on tags like v1.0, v0.1-beta, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Asciidoctor and PDF dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby-full build-essential zlib1g-dev
+          sudo gem install asciidoctor asciidoctor-pdf rouge
+
+      - name: Build PDF
+        run: |
+          asciidoctor-pdf index.adoc -o 10_Ways_to_Ruin_Your_Proxmox_Setup.pdf
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: 10_Ways_to_Ruin_Your_Proxmox_Setup.pdf
+          body_path: README.md
