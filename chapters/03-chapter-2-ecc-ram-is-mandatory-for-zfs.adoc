@@ -19,7 +19,7 @@ ECC memory is genuinely beneficial - but wrong in the specific claim
 that ZFS has some unique dependency on ECC that other filesystems don't
 share.
 
-==== Where the Myth Comes From
+=== Where the Myth Comes From
 
 The argument typically goes something like this: ZFS caches heavily in
 RAM, both for reads through the ARC and for writes that haven't yet been
@@ -54,7 +54,7 @@ filesystems, and it's no more vulnerable to RAM corruption than anything
 else. ECC benefits your entire system equally - ZFS doesn't need it more
 than your database, your running applications, or your kernel.
 
-==== What ECC Actually Provides
+=== What ECC Actually Provides
 
 To have an informed opinion, it helps to understand what ECC memory
 actually does and what failure modes it addresses.
@@ -88,7 +88,7 @@ ECC protects all of it equally - your filesystem, your applications,
 your kernel, your network stack. Singling out ZFS as having special ECC
 requirements misunderstands both ZFS and ECC.
 
-==== Risk Assessment in the Real World
+=== Risk Assessment in the Real World
 
 So should you use ECC memory? It depends on your situation, your risk
 tolerance, and your budget.
@@ -115,7 +115,7 @@ Fire or theft. A power surge that fries your system. If you're choosing
 between ECC memory and a proper backup system, the backup system
 protects you against a much wider range of threats.
 
-==== What Actually Protects Your Data
+=== What Actually Protects Your Data
 
 If you're serious about protecting your data - and you should be,
 regardless of your RAM type - focus on the fundamentals that actually
@@ -133,6 +133,7 @@ scrub reads every block and compares it against its stored checksum,
 detecting any corruption regardless of its source. Schedule scrubs
 monthly at minimum:
 
+[%unbreakable]
 [source,bash]
 ----
 # Start a scrub
@@ -151,6 +152,7 @@ Speaking of memory problems, periodic RAM testing is valuable regardless
 of whether you have ECC. https://www.memtest.org/[Memtest86{plus}] is
 the standard tool:
 
+[%unbreakable]
 [source,bash]
 ----
 apt install memtest86+
@@ -164,6 +166,7 @@ before it causes noticeable corruption.
 For systems with ECC, you can monitor for corrected errors through the
 EDAC subsystem:
 
+[%unbreakable]
 [source,bash]
 ----
 apt install edac-utils
@@ -173,7 +176,7 @@ edac-util -s
 Regular corrected errors indicate memory that's marginal - ECC is saving
 you from immediate problems, but replacement should be on your roadmap.
 
-==== The Social Dynamics of Forum Advice
+=== The Social Dynamics of Forum Advice
 
 It's worth noting why the "`ECC is mandatory`" advice persists despite
 being technically questionable. Online communities often develop strong
@@ -193,7 +196,7 @@ Ask for sources. Consider whether the advice accounts for different use
 cases and risk tolerances. Be skeptical of claims that frame complex
 technical decisions as obvious and anyone who disagrees as foolish.
 
-==== Best Practices
+=== Best Practices
 
 If your hardware supports ECC and the cost is manageable, use it. It's a
 genuine reliability improvement, and server-grade hardware often
@@ -217,7 +220,7 @@ you're running ZFS without ECC, feel free to ask them how often they
 test their backup restores. That question tends to be more revealing
 than their RAM configuration.
 
-==== The Bottom Line
+=== The Bottom Line
 
 ECC memory is a good thing that makes systems more reliable. It is not a
 ZFS-specific requirement, and running ZFS on non-ECC hardware is not the

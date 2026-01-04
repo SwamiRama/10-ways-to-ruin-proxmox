@@ -1,5 +1,7 @@
 :sectnums!:
 
+== Introduction
+
 Proxmox VE has become one of the most popular virtualization platforms
 for good reason. It's powerful, flexible, open source, and capable of
 running everything from a small homelab to serious production

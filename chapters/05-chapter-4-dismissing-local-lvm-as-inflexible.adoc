@@ -9,7 +9,7 @@ For years, parts of this assessment were correct. But if you're still
 operating on that assumption in 2025, you might be making your
 infrastructure more complicated than it needs to be.
 
-==== Understanding What "`Local-LVM`" Actually Is
+=== Understanding What "`Local-LVM`" Actually Is
 
 Before we go further, let's clear up a common point of confusion. When
 people talk about "`Local-LVM`" in Proxmox, they're usually referring to
@@ -25,7 +25,7 @@ installation with the default storage layout, the new feature doesn't
 change anything for you - your LVM-thin storage already handles
 snapshots just fine.
 
-==== The Old Reputation
+=== The Old Reputation
 
 So where did Local-LVM's bad reputation come from? A few places:
 
@@ -47,7 +47,7 @@ So the community advice became: use ZFS for anything serious, or set up
 Ceph if you're building a proper cluster. Local storage was relegated to
 "`only if you really have to`" status.
 
-==== What Changed in Proxmox VE 9
+=== What Changed in Proxmox VE 9
 
 With the release of Proxmox VE 9, Proxmox introduced *Snapshots as
 Volume Chains* - a technology preview that brings snapshot support to
@@ -83,7 +83,7 @@ For the default LVM-thin storage that most single-node Proxmox
 installations use, none of this is relevant - LVM-thin already handles
 snapshots natively and efficiently, without these limitations.
 
-==== Live Migration: Still a Consideration
+=== Live Migration: Still a Consideration
 
 Let's be honest about what hasn't changed: live migration with local
 storage is still not as smooth as with shared storage. When you migrate
@@ -104,7 +104,7 @@ capabilities*. The question isn't whether shared storage is better for
 migrations - of course it is - but whether the added complexity is
 justified for your specific use case.
 
-==== The Simplicity Advantage
+=== The Simplicity Advantage
 
 There's something to be said for keeping things simple, and LVM-thin
 excels at simplicity. There's no separate storage system to understand,
@@ -126,7 +126,7 @@ absolutely are, in the right context. But features you don't need aren't
 free; they come with cognitive overhead, additional configuration, and
 more potential failure points.
 
-==== Making the Choice
+=== Making the Choice
 
 The decision between LVM-based storage and ZFS (or other backends)
 should be based on your actual requirements, not on what feels more
@@ -160,11 +160,12 @@ with three or more nodes that require true high availability will
 generally benefit from shared storage regardless of the underlying
 technology.
 
-==== Checking Your Current Setup
+=== Checking Your Current Setup
 
 If you're not sure what storage backend you're currently using, Proxmox
 makes it easy to check:
 
+[%unbreakable]
 [source,bash]
 ----
 # List all configured storage
@@ -180,6 +181,7 @@ volume-chain feature for snapshots).
 
 And if you want to see how your VMs' disks are actually allocated:
 
+[%unbreakable]
 [source,bash]
 ----
 # List logical volumes (for LVM-based storage)
@@ -192,7 +194,7 @@ lvdisplay /dev/pve/vm-100-disk-0
 lvs -o+pool_lv
 ----
 
-==== Enabling Snapshots on Thick LVM (If Needed)
+=== Enabling Snapshots on Thick LVM (If Needed)
 
 If you're using thick LVM storage (typically on shared SAN LUNs) and
 want to try the new snapshot feature, you'll need to:
@@ -203,6 +205,7 @@ want to try the new snapshot feature, you'll need to:
 3. Be aware that this is a technology preview with the limitations
    mentioned earlier
 
+[%unbreakable]
 [source,bash]
 ----
 # Example storage.cfg entry for thick LVM with snapshots
@@ -213,7 +216,7 @@ lvm: san-storage
     snapshot-as-volume-chain 1
 ----
 
-==== Best Practices
+=== Best Practices
 
 Rather than following blanket recommendations, take the time to evaluate
 what your environment actually needs:
@@ -241,7 +244,7 @@ defaulting to whatever seems most sophisticated. The best storage
 architecture is the one that meets your requirements with the least
 unnecessary complexity.
 
-==== The Bottom Line
+=== The Bottom Line
 
 The reputation of LVM-based storage in Proxmox deserves
 reconsideration. The default LVM-thin storage has always been more

@@ -15,7 +15,7 @@ rock-solid reliability. Starve it, and you'll experience mysterious
 slowdowns, VM stuttering, and the creeping suspicion that something is
 wrong without any clear indication of what.
 
-==== The Formula That Fails
+=== The Formula That Fails
 
 If you've researched ZFS at all, you've encountered the rule of thumb:
 "`ZFS needs 1 GB of RAM per terabyte of storage.`" It's simple,
@@ -46,7 +46,7 @@ pressure, which meant ZFS couldn't cache effectively, which meant more
 disk I/O, which meant worse performance across the board. Everything
 technically functioned, but nothing functioned well.
 
-==== Understanding ZFS Memory Architecture
+=== Understanding ZFS Memory Architecture
 
 To plan properly, you need to understand where ZFS memory actually goes.
 The operating system doesn't just hand ZFS a chunk of RAM and walk away
@@ -86,7 +86,7 @@ needs approximately 5 GiB of RAM per TiB of stored data. A modest 10 TB
 pool with deduplication enabled demands 50 GB of RAM just for the DDT -
 before accounting for anything else.
 
-==== Practical Planning
+=== Practical Planning
 
 So what does this mean for your actual hardware decisions? Let's work
 through realistic scenarios.
@@ -117,7 +117,7 @@ the costs. Use compression instead - LZ4 or ZSTD provide meaningful
 space savings with negligible performance impact and no additional
 memory requirements.
 
-==== Monitoring What Matters
+=== Monitoring What Matters
 
 The good news is that ZFS is transparent about its memory usage. You
 don't have to guess whether your system is healthy - you can see exactly
@@ -127,6 +127,7 @@ The `arc++_++summary` command provides a comprehensive overview of ARC
 statistics, including current size, hit rates, and configuration limits.
 Run it periodically to understand how your cache is behaving:
 
+[%unbreakable]
 [source,bash]
 ----
 arc_summary
@@ -135,6 +136,7 @@ arc_summary
 For a quick check of key metrics without the full report, you can query
 the kernel statistics directly:
 
+[%unbreakable]
 [source,bash]
 ----
 cat /proc/spl/kstat/zfs/arcstats | grep -E "^size|^c_max|^c_min|^hits|^misses"
@@ -159,7 +161,7 @@ spot trends before they become problems. A gradually declining hit rate
 or steadily increasing memory pressure gives you warning that something
 needs attention.
 
-==== Constraining the ARC
+=== Constraining the ARC
 
 In memory-constrained environments, you might need to explicitly limit
 how much RAM ZFS can claim. Left to its own devices, ZFS will use as
@@ -170,6 +172,7 @@ Setting a maximum ARC size gives you predictable behavior at the cost of
 some potential cache performance. The configuration lives in
 `/etc/modprobe.d/zfs.conf`:
 
+[%unbreakable]
 [source,bash]
 ----
 # Limit ARC to 8 GiB (value in bytes)
@@ -179,6 +182,7 @@ options zfs zfs_arc_max=8589934592
 After making changes, update the initial ramdisk and reboot for the
 setting to take effect:
 
+[%unbreakable]
 [source,bash]
 ----
 update-initramfs -u
@@ -190,7 +194,7 @@ Proxmox, VMs, and a reasonable buffer. The ARC operates well even when
 constrained - you'll see more disk reads than with an unlimited cache,
 but the system behavior becomes much more predictable.
 
-==== The Bottom Line
+=== The Bottom Line
 
 ZFS is absolutely worth using. The data integrity features alone make it
 a compelling choice for any storage where the data matters. But it's not

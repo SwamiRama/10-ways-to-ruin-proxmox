@@ -15,7 +15,7 @@ make it look like free space you'd be foolish to leave on the table.
 
 And then you actually try running VMs on it.
 
-==== The Day I Learned This Lesson
+=== The Day I Learned This Lesson
 
 When I built my first "`serious`" Proxmox server, I was proud of my
 storage design. Six disks in RAIDZ2, giving me four disks worth of
@@ -36,7 +36,7 @@ nothing was actually broken. The system was working exactly as designed.
 The problem was that RAIDZ is designed for a different kind of workload
 than VMs generate.
 
-==== Why RAIDZ and VMs Don't Mix
+=== Why RAIDZ and VMs Don't Mix
 
 The root issue comes down to how
 https://en.wikipedia.org/wiki/Standard_RAID_levels#RAID_5[RAID parity]
@@ -71,7 +71,7 @@ overhead is amortized across substantial data. This is why RAIDZ makes
 sense for backup storage, media libraries, and bulk file servers. But VM
 workloads are the opposite of sequential.
 
-==== The Mirror Alternative
+=== The Mirror Alternative
 
 https://en.wikipedia.org/wiki/Standard_RAID_levels#RAID_1[Mirrored
 vdevs] work completely differently, and the difference matters
@@ -102,7 +102,7 @@ aren't lying - you genuinely get more usable space. The question is
 whether that space is worth the performance trade-off for your specific
 workload.
 
-==== Seeing the Difference
+=== Seeing the Difference
 
 If you're skeptical - and healthy skepticism about storage advice is
 appropriate - you can test this yourself. The `fio` tool generates I/O
@@ -145,6 +145,7 @@ struggles with random ones.
 You can also observe this in production through ZFS's built-in
 monitoring:
 
+[%unbreakable]
 [source,bash]
 ----
 # Watch I/O statistics in real-time
@@ -155,7 +156,7 @@ On a RAIDZ pool under VM load, you'll typically see all disks active but
 throughput limited by the parity overhead. On mirrors, you'll see the
 I/O distributed more effectively across the vdevs.
 
-==== The RAIDZ1 Rebuild Problem
+=== The RAIDZ1 Rebuild Problem
 
 Beyond performance, there's another reason to be cautious with RAIDZ,
 particularly RAIDZ1: the resilver risk with modern disk sizes.
@@ -191,7 +192,7 @@ data from the surviving disk to the replacement. A mirror resilver is
 essentially a single-disk read and single-disk write operation,
 completing in a fraction of the time a RAIDZ resilver takes.
 
-==== Designing Storage for Mixed Workloads
+=== Designing Storage for Mixed Workloads
 
 The solution isn't to avoid RAIDZ entirely - it's to use the right
 storage topology for each workload. Most Proxmox environments have
@@ -213,6 +214,7 @@ I/O - RAIDZ is perfectly suited.
 
 A practical implementation might look like this:
 
+[%unbreakable]
 [source,bash]
 ----
 # High-performance pool for VM disks (mirrors)
@@ -229,7 +231,7 @@ This separation gives you fast storage where performance matters and
 efficient storage where capacity matters. Your VMs get the IOPS they
 need; your backups get the space they need.
 
-==== Best Practices
+=== Best Practices
 
 Match your storage topology to your workload's actual I/O patterns. VM
 storage should use mirrors for acceptable random I/O performance. Backup
@@ -251,7 +253,7 @@ fix the fundamental random I/O limitation, but it helps with specific
 workloads. However, adding complexity to work around a topology mismatch
 is usually a sign you should reconsider the topology.
 
-==== The Bottom Line
+=== The Bottom Line
 
 RAIDZ is excellent technology used in countless production environments
 worldwide - for the right workloads. Sequential I/O, large files, backup

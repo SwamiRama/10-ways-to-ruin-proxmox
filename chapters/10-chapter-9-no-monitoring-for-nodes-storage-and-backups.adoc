@@ -18,7 +18,7 @@ glance at occasionally. It's about knowing the health of your
 infrastructure before problems become emergencies, and having the
 information you need to make decisions when something does go wrong.
 
-==== The False Comfort of "`No News`"
+=== The False Comfort of "`No News`"
 
 Proxmox provides a web interface that shows the current state of your
 nodes, VMs, and storage. It's useful for day-to-day management, but it's
@@ -40,7 +40,7 @@ SMART warnings before the disk actually fails. It tracks storage
 consumption and tells you when you'll run out of space at the current
 growth rate, not when you've already run out.
 
-==== What You Should Be Watching
+=== What You Should Be Watching
 
 A comprehensive monitoring setup for Proxmox environments covers several
 distinct areas, each with its own metrics and alert thresholds.
@@ -65,6 +65,7 @@ proper data center. A node running hot isn't just inefficient; it's
 aging its components faster and heading toward thermal throttling or
 shutdown.
 
+[%unbreakable]
 [source,bash]
 ----
 # Quick node health check
@@ -84,6 +85,7 @@ listening.
 Pool status should be checked regularly for degraded vdevs, ongoing
 scrubs or resilvers, and any errors:
 
+[%unbreakable]
 [source,bash]
 ----
 # Comprehensive ZFS pool status
@@ -101,6 +103,7 @@ read all data in a pool and verify checksums, detecting silent
 corruption that wouldn't otherwise be visible. Check when scrubs last
 ran and what they found:
 
+[%unbreakable]
 [source,bash]
 ----
 # Last scrub details are in zpool status output
@@ -116,6 +119,7 @@ For traditional storage,
 https://en.wikipedia.org/wiki/Self-Monitoring,_Analysis_and_Reporting_Technology[SMART
 monitoring] provides early warning of disk failures:
 
+[%unbreakable]
 [source,bash]
 ----
 # Check SMART status for all disks
@@ -150,6 +154,7 @@ changed and the backup is no longer capturing what you think it is.
 For Proxmox Backup Server, the verification feature should be part of
 your monitoring strategy:
 
+[%unbreakable]
 [source,bash]
 ----
 # On PBS, check recent backup and verification status
@@ -161,7 +166,7 @@ of space doesn't just stop new backups; depending on your retention
 policies, it might prevent pruning of old backups too, creating a
 deadlock that requires manual intervention.
 
-==== Checkmk: A Monitoring Solution That Fits
+=== Checkmk: A Monitoring Solution That Fits
 
 While many monitoring solutions exist, https://checkmk.com/[Checkmk]
 deserves special attention for Proxmox environments. It strikes an
@@ -184,6 +189,7 @@ VM is perfectly fine; for production environments, consider placing it
 on independent infrastructure so it remains available even if your main
 cluster has issues.
 
+[%unbreakable]
 [source,bash]
 ----
 # Download and install Checkmk Raw Edition on a Debian/Ubuntu system
@@ -200,6 +206,7 @@ Once your Checkmk server is running, you'll install agents on your
 Proxmox hosts. The agent is a simple shell script that collects system
 information and outputs it in a format Checkmk understands:
 
+[%unbreakable]
 [source,bash]
 ----
 # On each Proxmox host, install the Checkmk agent
@@ -230,6 +237,7 @@ can't see:
 To enable Proxmox monitoring, you'll configure the special agent in
 Checkmk's web interface. You'll need API credentials from Proxmox:
 
+[%unbreakable]
 [source,bash]
 ----
 # On Proxmox, create an API user for monitoring (read-only)
@@ -262,6 +270,7 @@ The ZFS checks are automatically discovered when you add a host running
 ZFS. No additional configuration required - Checkmk detects the ZFS
 pools and creates appropriate service checks.
 
+[%unbreakable]
 [source,bash]
 ----
 # The Checkmk agent includes ZFS sections automatically
@@ -324,6 +333,7 @@ supports SMS, Slack, Microsoft Teams, PagerDuty, and many other
 notification methods. The key is ensuring that critical alerts actually
 reach you - test your notification configuration regularly.
 
+[%unbreakable]
 [source,bash]
 ----
 # Checkmk notification test from command line
@@ -331,7 +341,7 @@ reach you - test your notification configuration regularly.
 cmk --notify test
 ----
 
-==== Other Monitoring Options
+=== Other Monitoring Options
 
 While Checkmk is excellent, it's not the only choice. Your existing
 infrastructure and preferences might point toward different solutions.
@@ -355,7 +365,7 @@ and sending alerts, provides better visibility than no monitoring at
 all. But as your environment grows, you'll appreciate having a proper
 monitoring system with history, dashboards, and sophisticated alerting.
 
-==== Alerting: The Point of Monitoring
+=== Alerting: The Point of Monitoring
 
 Collecting metrics is only valuable if something acts on them. Alerting
 transforms monitoring from passive data collection into active
@@ -379,7 +389,7 @@ them. The goal is a monitoring system where every alert means something
 - so that when an alert fires, you take it seriously rather than
 assuming it's another false alarm.
 
-==== Building a Monitoring Culture
+=== Building a Monitoring Culture
 
 Technical implementation is only part of effective monitoring. You also
 need habits and processes that ensure monitoring remains useful over
@@ -406,7 +416,7 @@ condition and verify that notifications arrive through all configured
 channels. Discover notification failures during a test, not during an
 actual emergency.
 
-==== Best Practices
+=== Best Practices
 
 Deploy monitoring before you think you need it. Setting up monitoring
 while everything is working gives you a baseline of normal behavior.
@@ -432,7 +442,7 @@ don't know its health. Unmonitored systems have a way of failing
 silently until the failure cascades into something visible - by which
 point the original problem may be much harder to diagnose.
 
-==== The Bottom Line
+=== The Bottom Line
 
 Monitoring is the difference between proactive infrastructure management
 and reactive firefighting. Without it, you're operating blind,

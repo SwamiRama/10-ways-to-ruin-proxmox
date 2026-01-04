@@ -17,7 +17,7 @@ run virtual machines.
 
 This path leads somewhere you don't want to go.
 
-==== The Creeping Complexity Problem
+=== The Creeping Complexity Problem
 
 The fundamental issue isn't any single service - it's the accumulation.
 Each additional package installed on the Proxmox host adds dependencies,
@@ -39,7 +39,7 @@ packages. The resulting state - half-upgraded, with broken dependencies
 - is exactly where you don't want your hypervisor to be, especially if
 you have production VMs depending on it.
 
-==== The Upgrade Risk
+=== The Upgrade Risk
 
 Speaking of upgrades, major Proxmox version upgrades deserve special
 consideration. Moving from one major version to the next involves
@@ -63,7 +63,7 @@ incompatibility that doesn't manifest until weeks later. The common
 factor is almost always software that shouldn't have been on the
 hypervisor in the first place.
 
-==== Security Surface Area
+=== Security Surface Area
 
 Every service running on a system represents potential attack surface. A
 web server might have vulnerabilities. A database might be
@@ -84,7 +84,7 @@ perform virtualization - and nothing else. Every additional service is
 another potential entry point that, if compromised, affects not just
 itself but everything the hypervisor manages.
 
-==== Troubleshooting Becomes Archaeology
+=== Troubleshooting Becomes Archaeology
 
 When something goes wrong on a minimal system, the debugging process is
 relatively straightforward. You know what's supposed to be running, you
@@ -111,7 +111,7 @@ made "`temporarily`" and become permanent. Over time, the gap between
 documentation and reality grows until the documentation is more
 misleading than helpful.
 
-==== The Right Architecture
+=== The Right Architecture
 
 The solution is conceptually simple: maintain a clear separation between
 your infrastructure layer and your application layer.
@@ -134,6 +134,7 @@ operations. Security boundaries exist between components. Backups are
 cleaner because application data is contained in VM images rather than
 scattered across the host filesystem.
 
+[%unbreakable]
 [source,bash]
 ----
 # Check what's installed on your Proxmox host
@@ -144,7 +145,7 @@ dpkg --get-selections | wc -l
 # Significantly more suggests accumulated software
 ----
 
-==== What Actually Belongs on the Host
+=== What Actually Belongs on the Host
 
 Not everything beyond base Proxmox is inappropriate. Some tools
 genuinely belong on the hypervisor because they need direct access to
@@ -170,7 +171,7 @@ The test is simple: does this tool need to be on the hypervisor to
 function? If a VM or container could run it equally well, that's where
 it should be.
 
-==== Migration Strategy
+=== Migration Strategy
 
 If your Proxmox host has already accumulated services, migrating them
 away is worthwhile even though it requires effort. The process is
@@ -179,6 +180,7 @@ straightforward, though it takes time.
 Inventory what's running on the host beyond base Proxmox. Check running
 processes, installed packages, listening ports, and cron jobs:
 
+[%unbreakable]
 [source,bash]
 ----
 # What's listening on network ports?
@@ -204,7 +206,7 @@ Take the opportunity to document each service as you migrate it. Why
 does this exist? Who uses it? What does it depend on? This documentation
 will be valuable going forward.
 
-==== LXC vs. VM: Choosing the Right Container
+=== LXC vs. VM: Choosing the Right Container
 
 Proxmox offers two isolation technologies for your application
 workloads, and choosing appropriately helps keep your infrastructure
@@ -225,6 +227,7 @@ belongs in a VM.
 When in doubt, use a VM. The resource overhead on modern hardware is
 minimal, and the stronger isolation is worth it for most use cases.
 
+[%unbreakable]
 [source,bash]
 ----
 # Create a minimal LXC container for a lightweight service
@@ -236,7 +239,7 @@ pct create 400 local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst \
     --unprivileged 1
 ----
 
-==== Best Practices
+=== Best Practices
 
 Treat your Proxmox host as infrastructure, not as a general-purpose
 server. Its job is to run virtual machines and containers reliably.
@@ -262,7 +265,7 @@ with minimal customization can be rebuilt in an hour or two. A host with
 accumulated services and undocumented configurations might take days -
 if you can reconstruct it at all.
 
-==== The Bottom Line
+=== The Bottom Line
 
 Your Proxmox hypervisor is the foundation that everything else depends
 on. Foundations should be stable, predictable, and well-understood.

@@ -7,7 +7,7 @@ something goes wrong. But enabling HA without understanding its
 requirements doesn't give you reliability; it gives you a new category
 of problems.
 
-==== What HA Actually Means in Proxmox
+=== What HA Actually Means in Proxmox
 
 Before diving into the pitfalls, let's clarify what Proxmox's HA system
 actually does. When you mark a VM or container as "`HA managed,`" you're
@@ -20,7 +20,7 @@ This sounds straightforward, but the mechanism that makes it work - and
 the reason for the strict requirements - is the concept of
 https://en.wikipedia.org/wiki/Quorum_(distributed_computing)[quorum].
 
-==== The Quorum Problem
+=== The Quorum Problem
 
 Proxmox uses
 https://en.wikipedia.org/wiki/Corosync_Cluster_Engine[Corosync] for
@@ -50,7 +50,7 @@ split-brain. But it means that a two-node cluster with HA enabled is
 actually less reliable than no HA at all, because a single node failure
 takes down everything instead of just half your workloads.
 
-==== The Three-Node Minimum
+=== The Three-Node Minimum
 
 The official Proxmox recommendation is a minimum of three nodes for HA,
 and the math explains why. With three nodes and three votes, losing one
@@ -69,7 +69,7 @@ which allows all but one node to fail - but if the QDevice itself fails,
 no additional node failures are tolerated. For this reason, Proxmox
 recommends QDevices only for even-numbered clusters.
 
-==== The QDevice Alternative
+=== The QDevice Alternative
 
 Not everyone can justify three full Proxmox nodes. Hardware costs money,
 uses power, and takes up space. For environments where a third node
@@ -95,6 +95,7 @@ out of three votes - a majority. HA can now function correctly.
 Setting up a QDevice requires a host running the `corosync-qnetd`
 daemon:
 
+[%unbreakable]
 [source,bash]
 ----
 # On the QDevice host (any Debian/Ubuntu system, Raspberry Pi, etc.)
@@ -107,6 +108,7 @@ pvecm qdevice setup <qdevice-ip-address>
 
 After setup, verify the configuration:
 
+[%unbreakable]
 [source,bash]
 ----
 # Check cluster status including QDevice
@@ -120,7 +122,7 @@ You should see three votes total: one from each Proxmox node and one
 from the QDevice. The QDevice status shows flags like `A,V,NMW` where
 `A` means Alive and `V` means it's casting a Vote.
 
-==== Fencing: The Other Half of HA
+=== Fencing: The Other Half of HA
 
 Quorum determines whether the cluster can act.
 https://en.wikipedia.org/wiki/Fencing_(computing)[Fencing] determines
@@ -128,7 +130,7 @@ how it acts. When a node is declared dead and its workloads need to move
 elsewhere, the cluster must be absolutely certain that the failed node
 won't suddenly come back and try to access shared resources.
 
-===== Watchdog-Based Self-Fencing (Default)
+=== Watchdog-Based Self-Fencing (Default)
 
 Proxmox uses watchdog-based self-fencing by default. This is simpler
 and often more reliable than external fencing mechanisms. Here's how
@@ -145,6 +147,7 @@ The Linux kernel's software watchdog (softdog) is enabled by default -
 no installation or configuration required. This is intentional and
 works well for most environments.
 
+[%unbreakable]
 [source,bash]
 ----
 # Verify watchdog is active (look for watchdog-mux)
@@ -154,12 +157,13 @@ systemctl status watchdog-mux
 cat /etc/default/pve-ha-manager
 ----
 
-===== Hardware Watchdog (Optional)
+=== Hardware Watchdog (Optional)
 
 For higher reliability, you can use a hardware watchdog if your server
 supports one. Hardware watchdogs are independent of the operating system
 and will trigger even if the kernel crashes.
 
+[%unbreakable]
 [source,bash]
 ----
 # Edit the HA manager configuration
@@ -174,18 +178,20 @@ WATCHDOG_MODULE=iTCO_wdt
 
 After changing the watchdog module, restart the watchdog-mux service:
 
+[%unbreakable]
 [source,bash]
 ----
 systemctl restart watchdog-mux
 ----
 
-===== External Fencing (STONITH)
+=== External Fencing (STONITH)
 
 For environments requiring active fencing - where surviving nodes
 forcibly power off the failed node rather than waiting for self-fencing
 - Proxmox supports hardware fence devices through IPMI, iDRAC, iLO, or
 managed PDUs.
 
+[%unbreakable]
 [source,bash]
 ----
 # Check current fencing mode
@@ -198,6 +204,7 @@ cat /etc/pve/ha/fence.cfg
 To enable hardware fencing, install the fence agents and configure
 your devices:
 
+[%unbreakable]
 [source,bash]
 ----
 # Install fence agents
@@ -213,7 +220,7 @@ For homelab environments without IPMI or out-of-band management, the
 default watchdog-based self-fencing is typically sufficient and more
 reliable than attempting to configure complex external fencing.
 
-==== Network Redundancy
+=== Network Redundancy
 
 HA depends entirely on cluster communication. If Corosync can't reach
 other nodes, it assumes they're dead - even if they're perfectly healthy
@@ -225,6 +232,7 @@ The solution is redundant networks for cluster communication. Proxmox
 supports multiple Corosync links, allowing you to define separate
 network paths:
 
+[%unbreakable]
 [source,bash]
 ----
 # View current Corosync configuration
@@ -233,6 +241,7 @@ cat /etc/pve/corosync.conf
 
 When setting up a cluster, you can specify multiple links:
 
+[%unbreakable]
 [source,bash]
 ----
 # When joining a cluster with redundant links
@@ -249,7 +258,7 @@ interfaces for Corosync traffic, separate from VM traffic and storage
 networks. This prevents heavy VM network usage from impacting cluster
 communication.
 
-==== Testing Before Production
+=== Testing Before Production
 
 HA configurations should be tested before you rely on them. This means
 actually simulating failures and verifying that failover works as
@@ -297,7 +306,7 @@ Don't wait for a real failure to discover that your HA configuration
 doesn't actually work. By then, you'll be dealing with an outage and
 trying to debug complex cluster behavior under pressure.
 
-==== Common Pitfalls
+=== Common Pitfalls
 
 *Ignoring the two-minute timeout*: Watchdog-based fencing has an
 intentional delay of approximately two minutes. This is not a bug - it's
@@ -317,7 +326,7 @@ failovers. Separate your traffic.
 network setup, or storage should be followed by HA testing. What worked
 before might not work after the change.
 
-==== Best Practices
+=== Best Practices
 
 Only enable HA when you've genuinely met the prerequisites. Three nodes
 minimum, or two nodes with a properly configured QDevice. Anything less
@@ -340,7 +349,7 @@ Monitor your cluster continuously. Set up alerts for quorum issues,
 fencing events, and HA state changes. Problems with HA often start as
 intermittent issues that become critical failures if ignored.
 
-==== The Bottom Line
+=== The Bottom Line
 
 High Availability requires actual redundancy, not just a checkbox in the
 Proxmox interface. Two nodes without a QDevice isn't an HA cluster; it's

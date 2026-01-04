@@ -9,7 +9,7 @@ accidentally deletes the wrong VM.
 
 At that point, "`next week`" becomes "`too late.`"
 
-==== The Uncomfortable Truth
+=== The Uncomfortable Truth
 
 Here's a statistic that should keep you up at night: most backup
 failures aren't discovered until a restore is needed. Systems dutifully
@@ -26,13 +26,14 @@ you actually needed.
 
 A backup you haven't tested is not a backup. It's a hope.
 
-==== vzdump: Where Most People Start
+=== vzdump: Where Most People Start
 
 Proxmox includes vzdump as its built-in backup tool, and for simple
 setups it works reasonably well. You can schedule backups to local
 storage, NFS shares, or SMB mounts, and the process is straightforward
 to configure through the web interface.
 
+[%unbreakable]
 [source,bash]
 ----
 # Manual backup of a single VM
@@ -52,7 +53,7 @@ few megabytes actually changed. Storage fills up quickly, backup windows
 grow longer, and network bandwidth becomes a bottleneck if you're
 backing up to remote storage.
 
-==== Proxmox Backup Server: The Modern Approach
+=== Proxmox Backup Server: The Modern Approach
 
 https://www.proxmox.com/en/proxmox-backup-server[Proxmox Backup Server]
 (PBS) is Proxmox's purpose-built solution for these problems, and it's
@@ -94,11 +95,12 @@ pull individual files from a backup without restoring the entire VM.
 When someone deletes an important document, you don't need to spin up
 the whole backup image to retrieve it.
 
-==== Setting Up PBS Integration
+=== Setting Up PBS Integration
 
 Adding a PBS server to your Proxmox environment is straightforward. On
 the Proxmox VE side, you add PBS as a storage target:
 
+[%unbreakable]
 [source,bash]
 ----
 # Add PBS storage
@@ -128,7 +130,7 @@ your recovery requirements:
 # keep-monthly 6
 ----
 
-==== The 3-2-1 Rule
+=== The 3-2-1 Rule
 
 No discussion of backup strategy is complete without mentioning the
 https://en.wikipedia.org/wiki/Backup#Storage[3-2-1 rule]: maintain three
@@ -147,6 +149,7 @@ physical media stored elsewhere (copy three, offsite)
 PBS supports remote sync to another PBS server, making the offsite
 component straightforward to implement:
 
+[%unbreakable]
 [source,bash]
 ----
 # On the remote PBS, create a sync job pulling from the primary
@@ -157,7 +160,7 @@ For homelab environments where a second physical location isn't
 practical, even syncing critical backups to cloud storage provides
 protection against local disasters like fire or theft.
 
-==== Testing Your Restores
+=== Testing Your Restores
 
 This point cannot be emphasized enough: *regularly test your restores*.
 Not just "`click restore and see if it starts,`" but actually verify
@@ -165,6 +168,7 @@ that the restored system works correctly.
 
 Schedule periodic restore tests as part of your operational routine:
 
+[%unbreakable]
 [source,bash]
 ----
 # Restore a VM to verify backup integrity (to a different VMID)
@@ -180,6 +184,7 @@ works.
 PBS includes built-in verification jobs that check backup integrity
 without performing full restores:
 
+[%unbreakable]
 [source,bash]
 ----
 # Verification runs can be scheduled in PBS
@@ -190,7 +195,7 @@ This catches storage-level corruption but doesn't verify that the backup
 is actually bootable and functional. Both types of testing have their
 place.
 
-==== Common Backup Mistakes
+=== Common Backup Mistakes
 
 Beyond not having backups at all, several common mistakes undermine
 backup strategies:
@@ -212,7 +217,7 @@ events that take out your entire setup.
 the same physical storage, a storage failure destroys both. Backups
 should always target separate physical media.
 
-==== Best Practices
+=== Best Practices
 
 Implement PBS if you're running more than a handful of VMs. The
 efficiency gains and additional features are worth the setup effort, and
@@ -233,7 +238,7 @@ Audit backup coverage whenever your environment changes. New VMs, new
 containers, new critical data - all should trigger a review of what's
 being backed up and whether coverage is adequate.
 
-==== The Bottom Line
+=== The Bottom Line
 
 Backups are the last line of defense against data loss, and they only
 work if they're comprehensive, tested, and properly maintained. A backup

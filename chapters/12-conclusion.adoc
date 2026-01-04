@@ -8,7 +8,7 @@ importantly, how to avoid those pitfalls in your own environment.
 
 Let's step back and look at the bigger picture.
 
-==== The Common Thread
+=== The Common Thread
 
 Reading through these mistakes, you might notice a pattern. Very few of
 them are about Proxmox being broken or badly designed. Instead, they're
@@ -27,7 +27,7 @@ implications of your choices. The tool won't stop you from doing things
 that seem reasonable but lead to problems. That's not a flaw; it's the
 nature of powerful, flexible software.
 
-==== Principles Over Checklists
+=== Principles Over Checklists
 
 Rather than memorizing specific rules, internalize the principles behind
 them:
@@ -56,7 +56,7 @@ logging, regular health checks - these aren't optional extras for
 serious environments. They're how you know whether your infrastructure
 is healthy before users start complaining.
 
-==== Your Environment Is Unique
+=== Your Environment Is Unique
 
 This guide provides general recommendations, but your specific situation
 might call for different choices. A homelab running non-critical
@@ -69,7 +69,7 @@ Use the principles from this guide to evaluate your own requirements and
 constraints. The goal isn't to implement every recommendation blindly -
 it's to make informed decisions that match your actual needs.
 
-==== Continuous Improvement
+=== Continuous Improvement
 
 A well-running Proxmox environment isn't a destination; it's an ongoing
 practice. Technology evolves. Your workloads change. New features become
@@ -85,7 +85,7 @@ The administrators who avoid disasters aren't the ones who set things up
 perfectly once - they're the ones who pay attention continuously and
 address small issues before they become big ones.
 
-==== Final Thoughts
+=== Final Thoughts
 
 Proxmox VE is genuinely excellent software that powers countless
 reliable environments around the world. When things go wrong, the cause

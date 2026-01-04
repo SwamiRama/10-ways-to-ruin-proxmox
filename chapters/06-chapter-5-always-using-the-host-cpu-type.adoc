@@ -11,7 +11,7 @@ a cluster, choosing "`host`" without understanding the implications
 might leave you staring at a failed migration at the worst possible
 moment.
 
-==== The Appeal of "`host`"
+=== The Appeal of "`host`"
 
 The "`host`" CPU type is seductive because it makes intuitive sense.
 Your physical CPU has a specific set of capabilities - instruction set
@@ -33,7 +33,7 @@ when migration isn't in the picture.
 
 The problems begin when you add a second node to the equation.
 
-==== The Migration Trap
+=== The Migration Trap
 
 https://en.wikipedia.org/wiki/Live_migration[Live migration] is one of
 the most powerful features of modern virtualization. The ability to move
@@ -61,7 +61,7 @@ doesn't exist. None of these outcomes are pleasant, especially if you're
 migrating because the source host is having problems and you need that
 VM running somewhere else immediately.
 
-==== It's Not Just About CPU Generations
+=== It's Not Just About CPU Generations
 
 You might think this is only a concern if you're mixing wildly different
 hardware - say, a decade-old server with a brand-new workstation. But
@@ -79,7 +79,7 @@ instruction set, their extensions diverge significantly. A VM configured
 with "`host`" on an Intel system simply cannot migrate to an AMD system,
 and vice versa - the feature sets are fundamentally incompatible.
 
-==== Understanding CPU Models in Proxmox
+=== Understanding CPU Models in Proxmox
 
 Proxmox offers several predefined CPU models that represent standardized
 feature sets rather than specific physical processors. These models
@@ -89,6 +89,7 @@ supports at least those features).
 
 You can see what's available on your system:
 
+[%unbreakable]
 [source,bash]
 ----
 # View available CPU models (from QEMU)
@@ -117,12 +118,13 @@ microarchitecture levels] defined by processor vendors, providing a
 standardized way to specify "`at least this capable`" without tying
 yourself to specific hardware.
 
-==== Checking Your Cluster's CPU Features
+=== Checking Your Cluster's CPU Features
 
 Before deciding on a CPU model for your cluster, it's worth
 understanding exactly what each node supports. You can compare feature
 sets across your nodes:
 
+[%unbreakable]
 [source,bash]
 ----
 # Show CPU flags on the current node
@@ -135,6 +137,7 @@ cat /proc/cpuinfo | grep flags | head -1 | tr ' ' '\n' | sort
 For a quick comparison between nodes, you can extract just the flags and
 diff them:
 
+[%unbreakable]
 [source,bash]
 ----
 # On each node, save flags to a file
@@ -147,7 +150,7 @@ diff /tmp/cpu_flags_node1.txt /tmp/cpu_flags_node2.txt
 Any flags that appear on one node but not another represent potential
 migration failures if you're using the "`host`" CPU type.
 
-==== Finding the Right Balance
+=== Finding the Right Balance
 
 The choice of CPU model is ultimately a tradeoff between performance and
 flexibility. The "`host`" setting maximizes performance but eliminates
@@ -177,12 +180,13 @@ instructions that can benefit numerical workloads.
 
 
 
-==== Changing CPU Type on Existing VMs
+=== Changing CPU Type on Existing VMs
 
 If you've already deployed VMs with the "`host`" CPU type and want to
 change them for better migration compatibility, you can modify the
 setting without recreating the VM:
 
+[%unbreakable]
 [source,bash]
 ----
 # Check current CPU configuration
@@ -198,7 +202,7 @@ operating system will detect the "`new`" CPU features on the next boot,
 which is usually seamless but occasionally requires reinstalling
 CPU-optimized software.
 
-==== Best Practices
+=== Best Practices
 
 For single-node setups, feel free to use "`host`" and extract maximum
 performance from your hardware. There's no migration to worry about, so
@@ -220,7 +224,7 @@ or whoever inherits your infrastructure, will appreciate knowing why
 things are configured the way they are and what constraints apply when
 adding new nodes.
 
-==== The Bottom Line
+=== The Bottom Line
 
 The "`host`" CPU type isn't wrong - it's just not universally
 appropriate. In a single-node setup, it's the right choice. In a

@@ -11,7 +11,7 @@ What could possibly go wrong?
 As it turns out, quite a lot. And the Proxmox documentation explicitly
 warns against this practice for good reasons.
 
-==== Why It's Tempting
+=== Why It's Tempting
 
 The appeal is understandable. Docker containers are lightweight, start
 in seconds, and there's an image for practically everything. Compared to
@@ -28,7 +28,7 @@ stops working correctly, or you encounter bizarre permission errors that
 make no sense. Welcome to the consequences of mixing container runtimes
 on your hypervisor.
 
-==== The iptables Conflict
+=== The iptables Conflict
 
 The most common and most frustrating issue involves
 https://en.wikipedia.org/wiki/Iptables[iptables], the Linux kernel's
@@ -63,7 +63,7 @@ and `DOCKER-ISOLATION` interleaved with Proxmox's rules. Debugging
 network issues becomes an exercise in figuring out which system added
 which rule and why.
 
-==== Kernel and Namespace Conflicts
+=== Kernel and Namespace Conflicts
 
 Beyond iptables, Docker and Proxmox's virtualization stack can conflict
 at deeper levels. Both systems rely heavily on Linux kernel features
@@ -82,7 +82,7 @@ Proxmox's resource accounting. The interactions are complex and often
 manifest as strange, hard-to-diagnose behavior rather than clear error
 messages.
 
-==== Security Implications
+=== Security Implications
 
 Running Docker on the hypervisor expands your attack surface
 significantly. The Proxmox host is the most privileged component in your
@@ -103,7 +103,7 @@ unexpectedly. Containers bound to `0.0.0.0` are accessible on all host
 interfaces unless you're careful with your iptables rules - which, as we
 discussed, are already being fought over by multiple systems.
 
-==== The Upgrade Risk
+=== The Upgrade Risk
 
 Proxmox major version upgrades are generally smooth, but they do modify
 system components. When you've installed Docker and potentially other
@@ -121,13 +121,14 @@ troubleshooting easier. When something breaks, you're not wondering
 whether it's a Proxmox issue, a Docker issue, or some interaction
 between the two.
 
-==== The Right Approach: Docker in a VM
+=== The Right Approach: Docker in a VM
 
 The solution is simple: run Docker in a dedicated VM. The overhead is
 minimal with modern virtualization, and the benefits are substantial.
 
 Create a lightweight VM for Docker workloads:
 
+[%unbreakable]
 [source,bash]
 ----
 # Create a minimal VM for Docker (via CLI or web interface)
@@ -156,7 +157,7 @@ capturing all containers and their data in a consistent state.
 *Simpler troubleshooting* because you know which system is responsible
 for what.
 
-==== What About LXC Containers?
+=== What About LXC Containers?
 
 Proxmox's native LXC containers offer another path for lightweight
 workloads. LXC containers are more tightly integrated with Proxmox,
@@ -186,7 +187,7 @@ features. However, there are caveats: ZFS-backed containers may need
 `fuse-overlayfs` for the Docker storage driver, and backups can be
 problematic. A VM remains the safer and more straightforward option.
 
-==== Best Practices
+=== Best Practices
 
 Keep your Proxmox host clean. It should run Proxmox and essential
 management tools, nothing more. Resist the temptation to install "`just
@@ -211,7 +212,7 @@ Think of your Proxmox host as infrastructure, not as a general-purpose
 server. The more focused its role, the more reliable and maintainable it
 becomes.
 
-==== The Bottom Line
+=== The Bottom Line
 
 Docker on the Proxmox host works until it doesn't, and when it fails,
 the problems are frustrating and time-consuming to debug. The
